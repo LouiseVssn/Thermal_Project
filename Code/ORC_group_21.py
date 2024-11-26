@@ -21,21 +21,27 @@ class ORC(object):
 
     def __init__(self,inputs,parameters,display):
 
-        self.display          = display
-        self.T_max            = parameters['T_max']
-        self.r_pump_1         = parameters['r_pump_1']
-        self.r_pump_2         = parameters['r_pump_2']
-        self.fluid            = parameters['fluid']
-        self.k_cc_ex1         = parameters['k_cc_ex1']
-        self.k_cc_ex2         = parameters['k_cc_ex2']
-        self.T_cold_fluid_in  = parameters['T_cold_fluid_in']
-        self.T_cold_fluid_out = parameters['T_cold_fluid_out']
-        self.cold_fluid       = parameters['cold_fluid']
-        self.hot_fluid        = parameters['hot_fluid']
-        self.dot_m_ex         = parameters['dot_m_ex']
-        self.T_hot_fluid_in   = parameters['T_hot_fluid_in'] 
-        self.eta_pump_1       = parameters['eta_pump_1']
-        self.eta_pump_2       = parameters['eta_pump_2']
+        self.display             = display
+        self.T_max               = parameters['T_max']
+        self.r_pump_1            = parameters['r_pump_1']
+        self.r_pump_2            = parameters['r_pump_2']
+        self.fluid               = parameters['fluid']
+        self.k_cc_ex1            = parameters['k_cc_ex1']
+        self.k_cc_ex2            = parameters['k_cc_ex2']
+        self.T_cold_fluid_in     = parameters['T_cold_fluid_in']
+        self.T_cold_fluid_out    = parameters['T_cold_fluid_out']
+        self.cold_fluid          = parameters['cold_fluid']
+        self.hot_fluid           = parameters['hot_fluid']
+        self.dot_m_ex            = parameters['dot_m_ex']   # mass flow du fluid chaud  10 kg/s
+        self.T_hot_fluid_in_II   = parameters['T_hot_fluid_in_II'] 
+        self.p_hot_fluid         = parameters['p_hot_fluid']
+        self.eta_pump_1          = parameters['eta_pump_1']
+        self.eta_pump_2          = parameters['eta_pump_2']
+
+
+        # Doute de la méthodologie - Voir TODO
+        self.T_pinch_evap_I   = parameters['T_pinch_evap_I']
+
         
         
        
@@ -104,7 +110,7 @@ class ORC(object):
         #region ETATS
 
             # region ETAT 6
-        self.T_6 = self.T_cold_fluid_in + 1#self.T_pinch_cd()
+        self.T_6 = self.T_cold_fluid_in + 1 #self.T_pinch_cd() 
         self.p_6 = PropsSI("P","T",self.T_6,"Q",self.x6,self.fluid)
         self.h_6 = PropsSI("H","T",self.T_6,"P",self.p_6,self.fluid)
         self.s_6 = PropsSI("S","T",self.T_6,"P",self.p_6,self.fluid)
@@ -137,7 +143,17 @@ class ORC(object):
         self.s_3 = PropsSI("S","T",self.T_3,"P",self.p_3,self.fluid)
         self.e_3 = self.exergie(self.h_3,self.s_3)
 
-        # endregion etat 3
+            # endregion etat 3
+
+        # Faire une matrice comme au HMW 3 : plus petite 
+
+        
+        # self.T_hot_fluid_out_I = self.T_1 + self.T_pinch_evap_I
+
+        # self.dot_m_tot = self.dot_m_ex * self.CP_av(self.T_hot_fluid_in_II, self.T_hot_fluid_out_I,self.p_hot_fluid,self.p_hot_fluid,self.fluid) * (self.T_hot_fluid_in_II - self.T_hot_fluid_out_I) / (self.CP_av(self.T_2,self.T_3,self.p_2,self.p_3,self.fluid) * (self.T_3 - self.T_2) + self.CP_av(self.T_1,self.T_4,self.p_1,self.p_4,self.fluid) * (self.T_4 - self.T_1))
+        # print('dot_m_tot === ',self.dot_m_tot,'[kg/s]')
+
+
 
 
 
